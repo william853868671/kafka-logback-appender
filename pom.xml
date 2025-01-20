@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <!-- 基本信息 -->
-    <groupId>com.github.william853868671</groupId>
+    <groupId>io.github.william853868671</groupId>
     <artifactId>kafka-logback-appender</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
