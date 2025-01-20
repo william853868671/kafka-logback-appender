@@ -105,6 +105,11 @@
                 </configuration>
             </plugin>
 
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+            </plugin>
+
             <!-- Maven Surefire Plugin for running tests -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -114,11 +119,20 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
+                <version>3.3.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
-            <!-- Maven Javadoc Plugin to attach javadocs -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.10.1</version>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
@@ -130,9 +144,11 @@
             </plugin>
 
             <!-- Maven GPG Plugin for signing artifacts -->
+            <!-- keys.openpgp.org -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
+                <version>3.2.7</version>
                 <executions>
                     <execution>
                         <id>sign-artifacts</id>
@@ -140,20 +156,37 @@
                         <goals>
                             <goal>sign</goal>
                         </goals>
+                        <configuration>
+                            <gpgArguments>
+                                <arg>--batch</arg>
+                                <arg>--yes</arg>
+                                <arg>--pinentry-mode=loopback</arg>
+                            </gpgArguments>
+                            <!--
+                            加密密码：使用Maven提供的mvn -encrypt-master-password和mvn -encrypt-password命令来加密你的密码
+                            mvn -encrypt-master-password
+                            # 输入并记住生成的master密码
+
+                            ~/.m2/settings-security.xml
+                            <settingsSecurity>
+                              <master>{encryptedMasterPassword}</master>
+                            </settingsSecurity>
+
+                            mvn -encrypt-password your-passphrase
+                            # 将输出的加密后的密码用于下一步
+
+                            编辑~/.m2/settings.xml
+                            <servers>
+                              <server>
+                                <id>gpg-signing</id>
+                                <passphrase>{encryptedPassphrase}</passphrase>
+                              </server>
+                            </servers>
+                            -->
+                            <passphraseServerId>gpg-signing</passphraseServerId>
+                        </configuration>
                     </execution>
                 </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.8</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <serverId>ossrh</serverId>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                </configuration>
             </plugin>
 
             <plugin>
@@ -167,41 +200,13 @@
             </plugin>
 
         </plugins>
-    </build>
 
-    <!-- 发布配置 -->
+    </build>
     <distributionManagement>
         <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+            <id>github</id>
+            <name>GitHubPackages</name>
+            <url>https://maven.pkg.github.com/william853868671/kafka-logback-appender</url>
         </repository>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
     </distributionManagement>
-
-    <!-- GitHub Packages认证配置 -->
-    <repositories>
-        <repository>
-            <id>github</id>
-            <name>GitHubPackages</name>
-            <url>https://maven.pkg.github.com/william853868671</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>github</id>
-            <name>GitHubPackages</name>
-            <url>https://maven.pkg.github.com/william853868671</url>
-        </pluginRepository>
-    </pluginRepositories>
-
 </project>
